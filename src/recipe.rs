@@ -302,6 +302,16 @@ impl<'src> Recipe<'src> {
 
     let working_directory = self.working_directory(context, &mut evaluator)?;
 
+    if let Some(working_directory) = &working_directory {
+      if let Err(io_error) = fs::read_dir(working_directory) {
+        return Err(Error::WorkingDirectory {
+          recipe: self.name(),
+          io_error,
+          working_directory: working_directory.clone(),
+        });
+      }
+    }
+
     let timestamp_format = self.timestamp_format(config, &mut evaluator)?;
 
     loop {
@@ -626,6 +636,16 @@ impl<'src> Recipe<'src> {
     };
 
     let working_directory = self.working_directory(context, &mut evaluator)?;
+
+    if let Some(working_directory) = &working_directory {
+      if let Err(io_error) = fs::read_dir(working_directory) {
+        return Err(Error::WorkingDirectory {
+          recipe: self.name(),
+          io_error,
+          working_directory: working_directory.clone(),
+        });
+      }
+    }
 
     let mut environment =
       Environment::new(context.dotenv, scope, settings, &context.module.unexports);

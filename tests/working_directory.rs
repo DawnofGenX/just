@@ -543,3 +543,17 @@ fn false_no_cd_does_not_conflict_with_working_directory() {
     .stdout("baz\n")
     .success();
 }
+
+#[test]
+fn missing_working_directory_reports_clear_error() {
+  Test::new()
+    .justfile(
+      "
+      [working-directory: \"missing\"]
+      pwd:
+        pwd
+    ",
+    )
+    .stderr_regex(".*could not set the working directory to.*")
+    .status(1);
+}
